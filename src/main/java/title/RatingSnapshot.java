@@ -1,4 +1,4 @@
-package model;
+package title;
 
 public class RatingSnapshot {
 

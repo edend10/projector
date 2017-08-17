@@ -1,7 +1,6 @@
 package extractor;
 
-import extractor.Extractor;
-import model.Title;
+import title.Title;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TitleNameExtractor implements Extractor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RatingExtractor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TitleNameExtractor.class);
 
     private static final String RATING_START_STR = "<h1 itemprop=\"name\" class=\"\">";
     private static final String RATING_END_STR = "&nbsp;<span id=\"titleYear\">";
@@ -24,7 +23,7 @@ public class TitleNameExtractor implements Extractor {
             String name = matcher.group(1);
             title.setName(name);
         } else {
-            LOGGER.error("No rating found for page");
+            LOGGER.error("No name found for page");
         }
     }
 }

@@ -1,5 +1,12 @@
+import extractor.RatingExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pagesource.PageSourceClient;
+import pagesource.PageSourceService;
+import pagesource.TitlePageParser;
+import pagesource.YearPageParser;
+import wayback.WaybackApiClient;
+import wayback.WaybackApiService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,10 +18,18 @@ public class ScraperRunner {
 
         List<Integer> yearsToParse = Arrays.asList(2016); //TODO: get from args
 
+        PageSourceClient pageSourceClient = new PageSourceClient();
+        WaybackApiClient waybackApiClient = new WaybackApiClient();
+        WaybackApiService waybackApiService = new WaybackApiService(waybackApiClient);
+        RatingExtractor ratingExtractor = new RatingExtractor();
+
         Scraper scraper = new Scraper(
-                new PageSourceService(new PageSourceClient()),
+                new PageSourceService(pageSourceClient),
                 new YearPageParser(),
-                new TitlePageParser());
+                new TitlePageParser(),
+                new RatingService(waybackApiService,
+                        pageSourceClient,
+                        ratingExtractor));
 
         scraper.scrape(yearsToParse);
 

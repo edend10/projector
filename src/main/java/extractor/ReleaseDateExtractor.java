@@ -1,7 +1,6 @@
 package extractor;
 
-import model.RatingSnapshot;
-import model.Title;
+import title.Title;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

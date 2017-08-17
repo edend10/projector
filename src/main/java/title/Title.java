@@ -1,6 +1,7 @@
-package model;
+package title;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,10 +11,12 @@ public class Title {
     private String name;
     private int releaseTimestamp;
     private Set<String> genres;
+    private Integer budget;
     private List<RatingSnapshot> ratingSnapshots;
 
     public Title() {
         this.ratingSnapshots = new ArrayList<>();
+        this.genres = new HashSet<>();
     }
 
     public int getImdbId() {
@@ -44,8 +47,12 @@ public class Title {
         return genres;
     }
 
-    public void setGenres(Set<String> genres) {
-        this.genres = genres;
+    public Integer getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Integer budget) {
+        this.budget = budget;
     }
 
     public List<RatingSnapshot> getRatingSnapshots() {
@@ -56,4 +63,7 @@ public class Title {
         this.ratingSnapshots.add(ratingSnapshots);
     }
 
+    public void addGenre(String genre) {
+        this.genres.add(genre);
+    }
 }

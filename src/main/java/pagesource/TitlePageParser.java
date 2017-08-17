@@ -1,9 +1,12 @@
-import extractor.Extractor;
-import extractor.ReleaseDateExtractor;
-import extractor.TitleNameExtractor;
-import model.Title;
+package pagesource;
+
+import extractor.*;
+import title.Title;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wayback.WaybackApiClient;
+import wayback.WaybackApiResponse;
+import wayback.WaybackApiService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +20,9 @@ public class TitlePageParser {
     public TitlePageParser() {
         this.extractors = Arrays.asList(
                 new TitleNameExtractor(),
-                new ReleaseDateExtractor()
+                new ReleaseDateExtractor(),
+                new GenreExtractor(),
+                new BudgetParser()
         );
     }
 
@@ -27,8 +32,6 @@ public class TitlePageParser {
         extractors.forEach(extractor ->
                 extractor.extract(pageSource, title)
         );
-
-        System.out.println(title.getReleaseTimestamp());
 
         return title;
     }

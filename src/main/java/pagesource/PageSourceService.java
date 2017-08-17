@@ -1,3 +1,5 @@
+package pagesource;
+
 public class PageSourceService {
     private static final String YEAR_PAGE_URL_FORMAT = "http://www.imdb.com/search/title?year=%d,%d&page=%d&title_type=feature";
     private static final String TITLE_PAGE_URL_FORMAT = "http://www.imdb.com/title/tt%d";

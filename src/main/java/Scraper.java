@@ -1,4 +1,7 @@
-import model.Title;
+import pagesource.PageSourceService;
+import pagesource.TitlePageParser;
+import pagesource.YearPageParser;
+import title.Title;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +16,14 @@ public class Scraper {
     private PageSourceService pageSourceService;
     private YearPageParser yearPageParser;
     private TitlePageParser titlePageParser;
+    private RatingService ratingService;
 
-    public Scraper(PageSourceService pageSourceService, YearPageParser yearPageParser, TitlePageParser titlePageParser) {
+    public Scraper(PageSourceService pageSourceService, YearPageParser yearPageParser,
+                   TitlePageParser titlePageParser, RatingService ratingService) {
         this.pageSourceService = pageSourceService;
         this.yearPageParser = yearPageParser;
         this.titlePageParser = titlePageParser;
+        this.ratingService = ratingService;
     }
 
     public void scrape(List<Integer> yearsToParse) {
@@ -26,12 +32,32 @@ public class Scraper {
         scrapeYearPagesForTitles(yearsToParse, imdbIds);
 
         Map<Integer, Title> titleMap = scrapeTitlePages(imdbIds);
+
+        scrapeForRatingSnapshots(titleMap);
+
+        System.out.println();
+    }
+
+    private void scrapeForRatingSnapshots(Map<Integer, Title> titleMap) {
+        titleMap.forEach((imdbId, title) -> {
+            try {
+                ratingService.addRatingSnapshots(title);
+            } catch (Exception e) {
+                LOGGER.error("Problem adding rating snapshots for title {}", imdbId, e);
+            }
+        });
     }
 
     private Map<Integer, Title> scrapeTitlePages(Set<Integer> imdbIds) {
         Map<Integer, Title> titleMap = new HashMap<>();
 
-        imdbIds.stream().forEach( imdbId -> {
+        //TODO: remove
+        int counter = 0;
+
+        for (Integer imdbId : imdbIds) {
+            if (counter++ > 3) {
+                break;
+            }
             try {
                 String pageSource = pageSourceService.getTitlePageSource(imdbId);
                 if (!pageSource.isEmpty()) {
@@ -42,9 +68,9 @@ public class Scraper {
                     LOGGER.error("page source for title {} is empty. skipping", imdbId);
                 }
             } catch (Exception e) {
-                LOGGER.error("Problem parsing title page for {}", imdbId, e);
+                LOGGER.error("Problem parsing title page for title {}", imdbId, e);
             }
-        });
+        }
 
         return titleMap;
     }
