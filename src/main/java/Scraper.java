@@ -64,6 +64,7 @@ public class Scraper {
                     Title title = titlePageParser.parseFeaturesFromTitlePageSource(pageSource);
                     title.setImdbId(imdbId);
                     titleMap.put(imdbId, title);
+                    //TODO: dump title page to sql and purge title map? maybe no need to return it then
                 } else {
                     LOGGER.error("page source for title {} is empty. skipping", imdbId);
                 }

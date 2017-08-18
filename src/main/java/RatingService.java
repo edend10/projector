@@ -18,6 +18,7 @@ public class RatingService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
     private static final List<Integer> OFFSETS = Arrays.asList(0, 7, 30, 90, 180, 365);
+    private static final int EXTRA_DAYS_OFFSET = 10;
 
     private WaybackApiService waybackApiService;
     private PageSourceClient pageSourceClient;
@@ -32,27 +33,35 @@ public class RatingService {
     }
 
     public void addRatingSnapshots(Title title) {
-        int daysSinceRelease = subtractDates(Integer.parseInt(LocalDate.now().format(DATE_FORMATTER)),
-                title.getReleaseTimestamp());
-        IntStream.of(daysSinceRelease).forEach(offset -> {
+        int daysSinceRelease = subtractDatesForDays(
+                Integer.parseInt(LocalDate.now().format(DATE_FORMATTER)),
+                title.getReleaseTimestamp(),
+                EXTRA_DAYS_OFFSET);
+
+        //TODO: remove this
+        daysSinceRelease = daysSinceRelease > 60 ? 60 : daysSinceRelease;
+
+        IntStream.range(0, daysSinceRelease).forEach(offset -> {
             int timestamp = addDays(title.getReleaseTimestamp(), offset);
             String waybackUrl = waybackApiService.getWaybackUrl(title.getImdbId(), timestamp);
             if (!waybackUrl.isEmpty()) {
                 String pageSource = pageSourceClient.getWebPageSource(waybackUrl);
                 if (!pageSource.isEmpty()) {
+                    LOGGER.info("Extracting ratings for imdbId: {}, offset: {}, timestamp: {}",
+                            title.getImdbId(), offset, timestamp);
                     ratingExtractor.extractRating(pageSource, title, timestamp);
                 } else {
-                    LOGGER.error("Empty page source for url: {}, imdbId: {}", waybackUrl, title.getImdbId());
+                    LOGGER.info("Empty page source for url: {}, imdbId: {}", waybackUrl, title.getImdbId());
                 }
             } else {
-                LOGGER.error("No wayback url found for imdbId: {} timestamp: {}", title.getImdbId(), timestamp);
+                LOGGER.debug("No wayback url found for imdbId: {}, offset: {}, timestamp: {}",
+                        title.getImdbId(), offset, timestamp);
             }
         });
     }
 
-    private int subtractDates(int todayTimestamp, int releaseTimestamp) {
-        Period period = Period.between(formatDate(todayTimestamp), formatDate(releaseTimestamp));
-        return period.getDays();
+    private int subtractDatesForDays(int todayTimestamp, int releaseTimestamp, int extraDaysOffset) {
+        return (int) (formatDate(todayTimestamp).toEpochDay() - formatDate(releaseTimestamp).toEpochDay()) + extraDaysOffset;
     }
 
     private LocalDate formatDate(int todayTimestamp) {

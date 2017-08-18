@@ -31,12 +31,12 @@ public class WaybackApiService {
                 response.getArchivedSnapshots().getClosest() != null &&
                 response.getArchivedSnapshots().getClosest().isAvailable()) {
             if (dayDifference(targetTimestamp, response.getArchivedSnapshots().getClosest().getTimestamp()) > DAY_DIFF_THRESHOLD) {
-                LOGGER.error("wayback url too far from target date imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
+                LOGGER.debug("wayback url too far from target date imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
                 return "";
             }
             return response.getArchivedSnapshots().getClosest().getUrl();
         } else {
-            LOGGER.error("wayback url unavailable for imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
+            LOGGER.debug("wayback url unavailable for imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
             return "";
         }
     }
