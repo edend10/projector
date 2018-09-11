@@ -1,8 +1,8 @@
 package pagesource;
 
 public class PageSourceService {
-    private static final String YEAR_PAGE_URL_FORMAT = "http://www.imdb.com/search/title?year=%d,%d&page=%d&title_type=feature";
-    private static final String TITLE_PAGE_URL_FORMAT = "http://www.imdb.com/title/tt%d";
+    private static final String YEAR_PAGE_URL_FORMAT = "https://www.imdb.com/search/title?release_date=%d-01-01,%d-01-01&page=%d&title_type=feature";
+    private static final String TITLE_PAGE_URL_FORMAT = "https://www.imdb.com/title/tt%d";
     private static final String WAYBACK_URL_FORMAT = "";
 
     private PageSourceClient client;
@@ -12,7 +12,7 @@ public class PageSourceService {
     }
 
     public String getYearPageSource(int year, int pageNumber) {
-        return client.getWebPageSource(String.format(YEAR_PAGE_URL_FORMAT, year, year, pageNumber));
+        return client.getWebPageSource(String.format(YEAR_PAGE_URL_FORMAT, year, year + 1, pageNumber));
     }
 
     public String getTitlePageSource(int imdbId) {

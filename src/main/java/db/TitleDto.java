@@ -17,6 +17,8 @@ public class TitleDto {
     private Integer releaseTimestamp;
     @Column(name="budget")
     private Integer budget;
+    @Column(name="raters")
+    private Integer raters;
 
     public Integer getImdbId() {
         return imdbId;
@@ -48,5 +50,13 @@ public class TitleDto {
 
     public void setBudget(Integer budget) {
         this.budget = budget;
+    }
+
+    public Integer getRaters() {
+        return raters;
+    }
+
+    public void setRaters(Integer raters) {
+        this.raters = raters;
     }
 }

@@ -12,8 +12,8 @@ public class RatingExtractor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RatingExtractor.class);
 
-    private static final String RATING_START_STR = "<span itemprop=\"ratingValue\">";
-    private static final String RATING_END_STR = "</span>";
+    private static final String RATING_START_STR = "<strong title=\"";
+    private static final String RATING_END_STR = " based on";
     private static final String REGEX_STRING = Pattern.quote(RATING_START_STR) + "(.*?)" + Pattern.quote(RATING_END_STR);
     private static final Pattern PATTERN = Pattern.compile(REGEX_STRING);
 
@@ -26,10 +26,10 @@ public class RatingExtractor {
                 float rating = Float.parseFloat(ratingAsString);
                 title.addRatingSnapshot(new RatingSnapshot(timestamp, rating));
             } else {
-                LOGGER.error("No rating found for page");
+                LOGGER.warn("No rating found for page");
             }
         } catch (Exception e) {
-            LOGGER.error("Exception while extracting rating from page", e);
+            LOGGER.error("Exception while extracting rating from page for title: {}", title.getImdbId(), e);
         }
     }
 }

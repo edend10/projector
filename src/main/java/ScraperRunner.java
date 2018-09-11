@@ -1,11 +1,11 @@
 import com.wix.mysql.EmbeddedMysql;
 import com.wix.mysql.config.MysqldConfig;
-import db.TitleDao;
-import db.TitleDaoImpl;
-import db.TitleDto;
+import db.*;
+import elastic.ElasticSearchService;
 import extractor.RatingExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import pagesource.PageSourceClient;
 import pagesource.PageSourceService;
 import pagesource.TitlePageParser;
@@ -35,7 +35,7 @@ public class ScraperRunner {
         Properties properties = new Properties();
         properties.load(new FileInputStream("src/main/resources/hibernate.properties"));
 
-        boolean dev = true;
+        boolean dev = false;
         EmbeddedMysql embeddedMysql = null;
 
         if (dev) {
@@ -63,7 +63,8 @@ public class ScraperRunner {
                 new TitlePageParser(),
                 new RatingService(waybackApiService,
                         pageSourceClient,
-                        ratingExtractor));
+                        ratingExtractor),
+                new ElasticSearchService());
 
         scraper.scrape(yearsToParse);
 

@@ -51,6 +51,7 @@ public class DbService {
         dto.setName(title.getName());
         dto.setReleaseTimestamp(title.getReleaseTimestamp());
         dto.setBudget(title.getBudget());
+        dto.setRaters(title.getRaters());
         return dto;
     }
 

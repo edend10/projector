@@ -3,6 +3,7 @@ create table imdb.title (
     name varchar(255),
     release_timestamp int(11),
     budget int(11),
+    raters int(11),
     primary key (id)
 );
 

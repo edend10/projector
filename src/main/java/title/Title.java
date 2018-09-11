@@ -13,6 +13,7 @@ public class Title {
     private Set<String> genres;
     private Integer budget;
     private List<RatingSnapshot> ratingSnapshots;
+    private Integer raters;
 
     public Title() {
         this.ratingSnapshots = new ArrayList<>();
@@ -53,6 +54,14 @@ public class Title {
 
     public void setBudget(Integer budget) {
         this.budget = budget;
+    }
+
+    public Integer getRaters() {
+        return raters;
+    }
+
+    public void setRaters(Integer raters) {
+        this.raters = raters;
     }
 
     public List<RatingSnapshot> getRatingSnapshots() {

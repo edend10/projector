@@ -20,15 +20,23 @@ public class BudgetParser implements Extractor {
         Matcher matcher = PATTERN.matcher(pageSource);
 
         if (matcher.find()) {
-            String budgetAsString = matcher.group(1);
+            String budgetStr = matcher.group(1);
             try {
-                int budget = Integer.valueOf(budgetAsString.trim().replace("$", "").replace(",", ""));
+                int budget = formatBudget(budgetStr);
                 title.setBudget(budget);
             } catch (NumberFormatException e) {
-                LOGGER.info("problem parsing budget string: {}", budgetAsString);
+                LOGGER.warn("problem parsing budget string: '{}'. For title: {}", budgetStr, title.getImdbId());
             }
         } else {
-            LOGGER.error("No budget found for page");
+            LOGGER.warn("No budget found for page for title: {}", title.getImdbId());
         }
+    }
+
+    private int formatBudget(String budgetRawStr) {
+        return Integer.valueOf(budgetRawStr
+                .replace("$", "")
+                .replace(",", "")
+                .replace("(estimated)", "")
+                .replace(" ", ""));
     }
 }

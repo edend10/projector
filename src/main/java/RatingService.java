@@ -39,7 +39,7 @@ public class RatingService {
                 EXTRA_DAYS_OFFSET);
 
         //TODO: remove this
-        daysSinceRelease = daysSinceRelease > 60 ? 60 : daysSinceRelease;
+        daysSinceRelease = daysSinceRelease > 5 ? 5 : daysSinceRelease;
 
         IntStream.range(0, daysSinceRelease).forEach(offset -> {
             int timestamp = addDays(title.getReleaseTimestamp(), offset);

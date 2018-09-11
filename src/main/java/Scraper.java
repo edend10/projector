@@ -1,3 +1,4 @@
+import elastic.ElasticSearchService;
 import pagesource.PageSourceService;
 import pagesource.TitlePageParser;
 import pagesource.YearPageParser;
@@ -17,13 +18,18 @@ public class Scraper {
     private YearPageParser yearPageParser;
     private TitlePageParser titlePageParser;
     private RatingService ratingService;
+    private ElasticSearchService elasticSearchService;
+
+    //private DbService dbService;
 
     public Scraper(PageSourceService pageSourceService, YearPageParser yearPageParser,
-                   TitlePageParser titlePageParser, RatingService ratingService) {
+                   TitlePageParser titlePageParser, RatingService ratingService,
+                   ElasticSearchService elasticSearchService) {
         this.pageSourceService = pageSourceService;
         this.yearPageParser = yearPageParser;
         this.titlePageParser = titlePageParser;
         this.ratingService = ratingService;
+        this.elasticSearchService = elasticSearchService;
     }
 
     public void scrape(List<Integer> yearsToParse) {
@@ -35,13 +41,14 @@ public class Scraper {
 
         scrapeForRatingSnapshots(titleMap);
 
-        System.out.println();
+        //dbService.saveTitleMap(titleMap);
     }
 
     private void scrapeForRatingSnapshots(Map<Integer, Title> titleMap) {
         titleMap.forEach((imdbId, title) -> {
             try {
                 ratingService.addRatingSnapshots(title);
+                elasticSearchService.updateTitleWithRatingSnapshots(title.getImdbId(), title.getRatingSnapshots());
             } catch (Exception e) {
                 LOGGER.error("Problem adding rating snapshots for title {}", imdbId, e);
             }
@@ -55,21 +62,21 @@ public class Scraper {
         int counter = 0;
 
         for (Integer imdbId : imdbIds) {
-            if (counter++ > 3) {
+            if (counter++ > 100) {
                 break;
             }
             try {
                 String pageSource = pageSourceService.getTitlePageSource(imdbId);
                 if (!pageSource.isEmpty()) {
-                    Title title = titlePageParser.parseFeaturesFromTitlePageSource(pageSource);
-                    title.setImdbId(imdbId);
+                    Title title = titlePageParser.parseFeaturesFromTitlePageSource(pageSource, imdbId);
+                    elasticSearchService.insertTitle(title, pageSource);
                     titleMap.put(imdbId, title);
                     //TODO: dump title page to sql and purge title map? maybe no need to return it then
                 } else {
                     LOGGER.error("page source for title {} is empty. skipping", imdbId);
                 }
             } catch (Exception e) {
-                LOGGER.error("Problem parsing title page for title {}", imdbId, e);
+                LOGGER.error("Problem parsing title page for title: {}", imdbId, e);
             }
         }
 

@@ -22,16 +22,17 @@ public class TitlePageParser {
                 new TitleNameExtractor(),
                 new ReleaseDateExtractor(),
                 new GenreExtractor(),
-                new BudgetParser()
+                new BudgetParser(),
+                new RatersExtractor()
         );
     }
 
-    public Title parseFeaturesFromTitlePageSource(String pageSource) {
+    public Title parseFeaturesFromTitlePageSource(String pageSource, Integer imdbId) {
         Title title = new Title();
 
+        title.setImdbId(imdbId);
         extractors.forEach(extractor ->
-                extractor.extract(pageSource, title)
-        );
+                extractor.extract(pageSource, title));
 
         return title;
     }

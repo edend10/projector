@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 public class TitleNameExtractor implements Extractor {
     private static final Logger LOGGER = LoggerFactory.getLogger(TitleNameExtractor.class);
 
-    private static final String RATING_START_STR = "<h1 itemprop=\"name\" class=\"\">";
-    private static final String RATING_END_STR = "&nbsp;<span id=\"titleYear\">";
+    private static final String RATING_START_STR = "<title>";
+    private static final String RATING_END_STR = "</title>";
     private static final String REGEX_STRING = Pattern.quote(RATING_START_STR) + "(.*?)" + Pattern.quote(RATING_END_STR);
     private static final Pattern PATTERN = Pattern.compile(REGEX_STRING);
 
@@ -20,10 +20,14 @@ public class TitleNameExtractor implements Extractor {
         Matcher matcher = PATTERN.matcher(pageSource);
 
         if (matcher.find()) {
-            String name = matcher.group(1);
+            String name = formatTitle(matcher.group(1));
             title.setName(name);
         } else {
-            LOGGER.error("No name found for page");
+            LOGGER.warn("No name found for title: {}", title.getImdbId());
         }
+    }
+
+    private String formatTitle(String rawTitle) {
+        return rawTitle.toLowerCase().replace(" - imdb", "").replaceAll("(\\()[^&]*(\\))", "").trim();
     }
 }
