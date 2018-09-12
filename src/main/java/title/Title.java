@@ -9,7 +9,7 @@ public class Title {
 
     private int imdbId;
     private String name;
-    private int releaseTimestamp;
+    private Integer releaseTimestamp;
     private Set<String> genres;
     private Integer budget;
     private List<RatingSnapshot> ratingSnapshots;
@@ -36,11 +36,11 @@ public class Title {
         this.name = name;
     }
 
-    public int getReleaseTimestamp() {
+    public Integer getReleaseTimestamp() {
         return releaseTimestamp;
     }
 
-    public void setReleaseTimestamp(int releaseTimestamp) {
+    public void setReleaseTimestamp(Integer releaseTimestamp) {
         this.releaseTimestamp = releaseTimestamp;
     }
 

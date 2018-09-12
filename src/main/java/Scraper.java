@@ -73,8 +73,10 @@ public class Scraper {
                 String pageSource = pageSourceService.getTitlePageSource(imdbId);
                 if (!pageSource.isEmpty()) {
                     Title title = titlePageParser.parseFeaturesFromTitlePageSource(pageSource, imdbId);
-                    elasticSearchService.insertTitle(title, pageSource);
-                    titleMap.put(imdbId, title);
+                    if (title.getReleaseTimestamp() != null) {
+                        elasticSearchService.insertTitle(title, pageSource);
+                        titleMap.put(imdbId, title);
+                    }
                 } else {
                     LOGGER.error("page source for title {} is empty. skipping", imdbId);
                 }
