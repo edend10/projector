@@ -34,9 +34,6 @@ public class BudgetParser implements Extractor {
 
     private int formatBudget(String budgetRawStr) {
         return Integer.valueOf(budgetRawStr
-                .replace("$", "")
-                .replace(",", "")
-                .replace("(estimated)", "")
-                .replace(" ", ""));
+                .replaceAll("[^\\d.]", ""));
     }
 }

@@ -20,7 +20,7 @@ public class RatersExtractor implements Extractor {
         Matcher matcher = PATTERN.matcher(pageSource);
 
         while (matcher.find()) {
-            String ratersRaw = matcher.group(1).replace(" ", "").replace(",", "");
+            String ratersRaw = matcher.group(1).replaceAll("[^\\d.]", "").replace(" ", "").replace(",", "");
             if (!ratersRaw.equals("")) {
                 Integer raters = Integer.parseInt(ratersRaw);
                 title.setRaters(raters);

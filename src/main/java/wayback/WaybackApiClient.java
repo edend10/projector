@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
+import java.util.Optional;
 
 public class WaybackApiClient {
 
@@ -18,15 +19,15 @@ public class WaybackApiClient {
         restTemplate.setMessageConverters(Collections.singletonList(new MappingAnyJsonHttpMessageConverter()));
     }
 
-    public WaybackApiResponse getWaybackResponse(String url) {
+    public Optional<WaybackApiResponse> getWaybackResponse(String url) {
         ResponseEntity<WaybackApiResponse> jsonResponse = restTemplate.getForEntity(url, WaybackApiResponse.class);
         if (jsonResponse.getStatusCode() == HttpStatus.OK) {
-            return jsonResponse.getBody();
+            return Optional.of(jsonResponse.getBody());
         } else {
             LOGGER.warn("Wayback api http call failed with status {}: {}",
                     jsonResponse.getStatusCode().value(), jsonResponse.getStatusCode().getReasonPhrase());
 
-            return new WaybackApiResponse();
+            return Optional.empty();
         }
     }
 }

@@ -17,19 +17,21 @@ public class RatingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RatingService.class);
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
-    private static final List<Integer> OFFSETS = Arrays.asList(0, 7, 30, 90, 180, 365);
     private static final int EXTRA_DAYS_OFFSET = 10;
 
     private WaybackApiService waybackApiService;
     private PageSourceClient pageSourceClient;
     private RatingExtractor ratingExtractor;
+    private int maxRatingsSnapsToQuery;
 
     public RatingService(WaybackApiService waybackApiService,
                          PageSourceClient pageSourceClient,
-                         RatingExtractor ratingExtractor) {
+                         RatingExtractor ratingExtractor,
+                         int maxRatingsSnapsToQuery) {
         this.waybackApiService = waybackApiService;
         this.pageSourceClient = pageSourceClient;
         this.ratingExtractor = ratingExtractor;
+        this.maxRatingsSnapsToQuery = maxRatingsSnapsToQuery;
     }
 
     public void addRatingSnapshots(Title title) {
@@ -39,7 +41,9 @@ public class RatingService {
                 EXTRA_DAYS_OFFSET);
 
         //TODO: remove this
-        daysSinceRelease = daysSinceRelease > 5 ? 5 : daysSinceRelease;
+        if (maxRatingsSnapsToQuery > 0) {
+            daysSinceRelease = daysSinceRelease > maxRatingsSnapsToQuery ? maxRatingsSnapsToQuery : daysSinceRelease;
+        }
 
         IntStream.range(0, daysSinceRelease).forEach(offset -> {
             int timestamp = addDays(title.getReleaseTimestamp(), offset);

@@ -1,7 +1,7 @@
 package pagesource;
 
 public class PageSourceService {
-    private static final String YEAR_PAGE_URL_FORMAT = "https://www.imdb.com/search/title?release_date=%d-01-01,%d-01-01&page=%d&title_type=feature";
+    private static final String YEAR_PAGE_URL_FORMAT = "https://www.imdb.com/search/title?release_date=%d-01-01,%d-01-01&page=%d&title_type=feature&countries=us";
     private static final String TITLE_PAGE_URL_FORMAT = "https://www.imdb.com/title/tt%d";
     private static final String WAYBACK_URL_FORMAT = "";
 

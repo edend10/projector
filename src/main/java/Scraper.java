@@ -10,26 +10,30 @@ import java.util.*;
 
 public class Scraper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Scraper.class);
+    //TODO:
+    // Some imdb ids start with 0 (i.e. tt012121)
+    // Need to make imdb ids strings instead of ints to fix this issue
 
-    private static final int MAX_PAGES_TO_TRY = 1;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Scraper.class);
 
     private PageSourceService pageSourceService;
     private YearPageParser yearPageParser;
     private TitlePageParser titlePageParser;
     private RatingService ratingService;
     private ElasticSearchService elasticSearchService;
+    private int maxPagesToTry;
 
     //private DbService dbService;
 
     public Scraper(PageSourceService pageSourceService, YearPageParser yearPageParser,
                    TitlePageParser titlePageParser, RatingService ratingService,
-                   ElasticSearchService elasticSearchService) {
+                   ElasticSearchService elasticSearchService, int maxPagesToTry) {
         this.pageSourceService = pageSourceService;
         this.yearPageParser = yearPageParser;
         this.titlePageParser = titlePageParser;
         this.ratingService = ratingService;
         this.elasticSearchService = elasticSearchService;
+        this.maxPagesToTry = maxPagesToTry;
     }
 
     public void scrape(List<Integer> yearsToParse) {
@@ -59,19 +63,18 @@ public class Scraper {
         Map<Integer, Title> titleMap = new HashMap<>();
 
         //TODO: remove
-        int counter = 0;
+//        int counter = 0;
 
         for (Integer imdbId : imdbIds) {
-            if (counter++ > 100) {
-                break;
-            }
+//            if (counter++ > 4) {
+//                break;
+//            }
             try {
                 String pageSource = pageSourceService.getTitlePageSource(imdbId);
                 if (!pageSource.isEmpty()) {
                     Title title = titlePageParser.parseFeaturesFromTitlePageSource(pageSource, imdbId);
                     elasticSearchService.insertTitle(title, pageSource);
                     titleMap.put(imdbId, title);
-                    //TODO: dump title page to sql and purge title map? maybe no need to return it then
                 } else {
                     LOGGER.error("page source for title {} is empty. skipping", imdbId);
                 }
@@ -85,7 +88,7 @@ public class Scraper {
 
     private void scrapeYearPagesForTitles(List<Integer> yearsToParse, Set<Integer> imdbIds) {
         for (Integer year : yearsToParse) {
-            for (int pageNumber = 1; pageNumber <= MAX_PAGES_TO_TRY; pageNumber++) {
+            for (int pageNumber = 1; pageNumber <= maxPagesToTry; pageNumber++) {
                 String yearPageSource = pageSourceService.getYearPageSource(year, pageNumber);
 
                 if (yearPageSource.isEmpty()) {

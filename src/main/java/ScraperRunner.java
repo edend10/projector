@@ -29,11 +29,16 @@ public class ScraperRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScraperRunner.class);
     private static final String USER = "hibernate.connection.username";
     private static final String PASSWORD = "hibernate.connection.password";
+    private static final String MAX_PAGES = "max.year.pages";
+    private static final String MAX_RATINGS_SNAPS = "max.rating.snaps";
 
     public static void main(String[] args) throws IOException {
 
         Properties properties = new Properties();
-        properties.load(new FileInputStream("src/main/resources/hibernate.properties"));
+        properties.load(new FileInputStream("src/main/resources/projector.properties"));
+
+        int maxPagesToTry = Integer.parseInt(properties.getProperty(MAX_PAGES));
+        int maxRatingSnapsToQuery = Integer.parseInt(properties.getProperty(MAX_RATINGS_SNAPS));
 
         boolean dev = false;
         EmbeddedMysql embeddedMysql = null;
@@ -63,8 +68,10 @@ public class ScraperRunner {
                 new TitlePageParser(),
                 new RatingService(waybackApiService,
                         pageSourceClient,
-                        ratingExtractor),
-                new ElasticSearchService());
+                        ratingExtractor,
+                        maxRatingSnapsToQuery),
+                new ElasticSearchService(),
+                maxPagesToTry);
 
         scraper.scrape(yearsToParse);
 

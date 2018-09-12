@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class WaybackApiService {
@@ -24,21 +25,26 @@ public class WaybackApiService {
 
     public String getWaybackUrl(int imdbId, int targetTimestamp) {
         String url = String.format(WAYBACK_API_AVAILABILITY_URL_FORMAT, imdbId, targetTimestamp);
-        WaybackApiResponse response = client.getWaybackResponse(url);
+        Optional<WaybackApiResponse> responseOptional = client.getWaybackResponse(url);
 
-        if (response != null &&
-                response.getArchivedSnapshots() != null &&
-                response.getArchivedSnapshots().getClosest() != null &&
-                response.getArchivedSnapshots().getClosest().isAvailable()) {
-            if (dayDifference(targetTimestamp, response.getArchivedSnapshots().getClosest().getTimestamp()) > DAY_DIFF_THRESHOLD) {
-                LOGGER.debug("wayback url too far from target date imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
+        if (responseOptional.isPresent()) {
+                WaybackApiResponse response = responseOptional.get();
+                if (response.getArchivedSnapshots() != null &&
+                    response.getArchivedSnapshots().getClosest() != null &&
+                    response.getArchivedSnapshots().getClosest().isAvailable()) {
+                if (dayDifference(targetTimestamp, response.getArchivedSnapshots().getClosest().getTimestamp()) > DAY_DIFF_THRESHOLD) {
+                    LOGGER.debug("wayback url too far from target date imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
+                    return "";
+                }
+                return response.getArchivedSnapshots().getClosest().getUrl();
+            } else {
+                LOGGER.debug("wayback url unavailable for imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
                 return "";
             }
-            return response.getArchivedSnapshots().getClosest().getUrl();
-        } else {
-            LOGGER.debug("wayback url unavailable for imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
-            return "";
         }
+
+        LOGGER.debug("wayback url unavailable for imdbId: {} targetTimestamp: {}", imdbId, targetTimestamp);
+        return "";
     }
 
     private long dayDifference(int targetTimestamp, String timestamp) {
