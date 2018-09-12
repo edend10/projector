@@ -31,6 +31,7 @@ public class ScraperRunner {
     private static final String PASSWORD = "hibernate.connection.password";
     private static final String MAX_PAGES = "max.year.pages";
     private static final String MAX_RATINGS_SNAPS = "max.rating.snaps";
+    private static final String ELASTICSEARCH_URL = "elasticsearch.url";
 
     public static void main(String[] args) throws IOException {
 
@@ -39,6 +40,7 @@ public class ScraperRunner {
 
         int maxPagesToTry = Integer.parseInt(properties.getProperty(MAX_PAGES));
         int maxRatingSnapsToQuery = Integer.parseInt(properties.getProperty(MAX_RATINGS_SNAPS));
+        String elasticSearchUrl = properties.getProperty(ELASTICSEARCH_URL);
 
         boolean dev = false;
         EmbeddedMysql embeddedMysql = null;
@@ -70,7 +72,7 @@ public class ScraperRunner {
                         pageSourceClient,
                         ratingExtractor,
                         maxRatingSnapsToQuery),
-                new ElasticSearchService(),
+                new ElasticSearchService(elasticSearchUrl),
                 maxPagesToTry);
 
         scraper.scrape(yearsToParse);

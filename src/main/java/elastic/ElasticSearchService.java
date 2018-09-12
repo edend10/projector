@@ -22,7 +22,7 @@ public class ElasticSearchService {
 
     private final ElasticSearchClient elasticSearchClient;
 
-    public ElasticSearchService() {
+    public ElasticSearchService(String url) {
         OkHttpClient client = new OkHttpClient.Builder()
                 .readTimeout(60, TimeUnit.SECONDS)
                 .writeTimeout(60, TimeUnit.SECONDS)
@@ -30,7 +30,7 @@ public class ElasticSearchService {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(client)
-                .baseUrl("http://192.168.0.2:9200/")
+                .baseUrl(url)
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
 
