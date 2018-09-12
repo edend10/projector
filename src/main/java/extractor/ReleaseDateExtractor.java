@@ -32,7 +32,7 @@ public class ReleaseDateExtractor implements Extractor {
                 LOGGER.warn("No release date found for for title: {}", title.getImdbId());
             }
         } catch (Exception e) {
-            LOGGER.warn("Exception while parsing release date for title: {}", title.getImdbId(), e);
+            LOGGER.warn("Exception while parsing release date for title: {}. -> {}", title.getImdbId(), e.getClass());
         }
     }
 
